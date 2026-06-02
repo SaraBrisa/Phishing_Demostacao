@@ -4,7 +4,7 @@
 // ============================================================
 
 const DB = {
-
+ ///
   // ── Usuários cadastrados ──────────────────────────────────
   _usuarios_padrao: [
     { id: 1, nome: "Sara B. Mariano",  email: "sarabgmariano24@gmail.com", senha: "senha123"  },
