@@ -6,7 +6,11 @@
 const DB = {
 
   // ── Usuários cadastrados ──────────────────────────────────
-
+  _usuarios_padrao: [
+    { id: 1, nome: "Sara B. Mariano",  email: "sarabgmariano24@gmail.com", senha: "senha123"  },
+    { id: 2, nome: "João Silva",        email: "joao.silva@gmail.com",       senha: "joao2024"  },
+    { id: 3, nome: "Maria Souza",       email: "maria.souza@gmail.com",      senha: "maria@pass"},
+  ],
   _usuarios_mem: null,
 
   get usuarios() {
